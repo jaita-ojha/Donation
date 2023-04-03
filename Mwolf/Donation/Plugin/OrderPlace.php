@@ -12,18 +12,22 @@ class OrderPlace
      * @param OrderInterface $order
      * @return OrderInterface
      */
-    protected $_objectManager;
-    public function __construct( \Magento\Framework\ObjectManagerInterface $objectmanager )
+    protected $quoteRepository;
+
+    public function __construct( 
+        
+        \Magento\Quote\Model\QuoteRepository $quoteRepository
+    )
+
     {
-        $this->_objectManager = $objectmanager;
+        $this->quoteRepository = $quoteRepository;
     }
     public function afterPlace(
         OrderManagementInterface $subject,
         OrderInterface $order
     ) {
         $orderId = $order->getIncrementId();
-        $quoteRepository = $this->_objectManager->create('Magento\Quote\Model\QuoteRepository');
-        $quote = $quoteRepository->get($order->getQuoteId());
+        $quote = $this->quoteRepository->get($order->getQuoteId());
         $order->setDonationPrice($quote->getDonationPrice());
         $order->save();
         return $order;
